@@ -27,21 +27,24 @@ class MainWindow(QMainWindow):
         file_menu_item.addAction(search_action)
         search_action.triggered.connect(self.search)
 
-        #About
+        # About
         about_action = QAction("About", self)
         help_menu_item.addAction(about_action)
+        about_action.triggered.connect(self.about)
 
-        # Student table
+        # Main window – Student table
         self.table = QTableWidget()
+
+        # Set columns
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(("ID", "Name", "Course", "Phone"))
-        self.table.verticalHeader().setVisible(False)
 
-        # Set column widths
         self.table.setColumnWidth(0, 50)
         self.table.setColumnWidth(1, 220)
         self.table.setColumnWidth(2, 100)
         self.table.setColumnWidth(3, 100)
+
+        self.table.verticalHeader().setVisible(False)
 
         self.setCentralWidget(self.table)
         self.load_data()
@@ -54,12 +57,11 @@ class MainWindow(QMainWindow):
         toolbar.addAction(add_student_action)
         toolbar.addAction(search_action)
 
-        # Status bar & elements
+        # Status bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
 
-        # Detect cell click
-        self.table.cellClicked.connect(self.cell_selected)
+        self.table.cellClicked.connect(self.cell_selected)  # Detect cell click
 
     def cell_selected(self):
         edit_button = QPushButton("Edit Record")
@@ -101,6 +103,11 @@ class MainWindow(QMainWindow):
     def delete(self):
         dialog = DeleteDialog()
         dialog.exec()
+
+    def about(self):
+        dialog = AboutDialog()
+        dialog.exec()
+
 
 class InsertDialog(QDialog):
     def __init__(self):
@@ -281,6 +288,14 @@ class SearchDialog(QDialog):
         cursor.close()
         connection.close()
 
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About This App")
+        content = "This is a super simple student management system app developed to practice OOP and PyQt6 and " \
+                  "working with databases :) "
+        self.setText(content)
 
 # Initialize the app and display the main window
 app = QApplication(sys.argv)
