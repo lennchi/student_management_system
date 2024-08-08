@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QLineEdit, QGridLayout, QPushButton, \
-    QComboBox, QMainWindow, QTableWidget, QTableWidgetItem, QDialog, QToolBar
+    QComboBox, QMainWindow, QTableWidget, QTableWidgetItem, QDialog, QToolBar, QStatusBar
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 import sys
@@ -46,14 +46,35 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.table)
         self.load_data()
 
-        # Toolbar
+        # Toolbar & elements
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
 
-        # Toolbar elements
         toolbar.addAction(add_student_action)
         toolbar.addAction(search_action)
+
+        # Status bar & elements
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
+
+        # Detect cell click
+        self.table.cellClicked.connect(self.cell_selected)
+
+    def cell_selected(self):
+        edit_button = QPushButton("Edit Record")
+        edit_button.clicked.connect(self.edit)
+
+        delete_button = QPushButton("Delete Record")
+        delete_button.clicked.connect(self.delete)
+
+        children = self.findChildren(QPushButton)
+        if children:
+            for child in children:
+                self.status_bar.removeWidget(child)
+
+        self.status_bar.addWidget(edit_button)
+        self.status_bar.addWidget(delete_button)
 
     def load_data(self):
         connection = sqlite3.connect("database.db")
@@ -73,6 +94,13 @@ class MainWindow(QMainWindow):
         dialog = SearchDialog()
         dialog.exec()
 
+    def edit(self):
+        dialog = EditDialog()
+        dialog.exec
+
+    def delete(self):
+        dialog = DeleteDialog()
+        dialog.exec()
 
 class InsertDialog(QDialog):
     def __init__(self):
@@ -120,6 +148,19 @@ class InsertDialog(QDialog):
 
         # Display the newly added data
         main_window.load_data()
+
+
+class EditDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Edit Record")
+        self.setFixedSize(300, 300)
+
+class DeleteDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Delete Record")
+        self.setFixedSize(300, 300)
 
 
 class SearchDialog(QDialog):
