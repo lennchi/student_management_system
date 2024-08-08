@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QLineEdit, QGridLayout, QPushButton, \
     QComboBox, QMainWindow, QTableWidget, QTableWidgetItem, QDialog
 from PyQt6.QtGui import QAction
+from PyQt6.QtCore import Qt
 import sys
 import sqlite3
 
@@ -22,8 +23,8 @@ class MainWindow(QMainWindow):
 
         # Find student
         search_action = QAction("Search Student", self)
-        search_action.triggered.connect(self.search)
         file_menu_item.addAction(search_action)
+        search_action.triggered.connect(self.search)
 
         #About
         about_action = QAction("About", self)
@@ -130,19 +131,15 @@ class SearchDialog(QDialog):
         # Connect to the DB
         connection = sqlite3.connect("database.db")
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM students WHERE name = ?", searched_name)
-        # connection.commit()
-        # cursor.close()
+        result = cursor.execute("SELECT * FROM students WHERE name = ?", (searched_name,))
+        rows = list(result)
+        print(rows)
+        items = main_window.table.findItems(searched_name, Qt.MatchFlag.MatchFixedString)
+        for item in items:
+            main_window.table.item(item.row(), 1).setSelected(True)
+
+        cursor.close()
         connection.close()
-
-        # Display the newly added data
-        main_window.load_data()
-
-
-
-
-        # Display the newly added data
-        main_window.load_data()
 
 
 # Initialize the app and display the main window
