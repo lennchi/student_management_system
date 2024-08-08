@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Student Management System")
+        self.resize(500, 400)
 
         # Top menu
         file_menu_item = self.menuBar().addMenu("&File")
@@ -35,6 +36,13 @@ class MainWindow(QMainWindow):
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(("ID", "Name", "Course", "Phone"))
         self.table.verticalHeader().setVisible(False)
+
+        # Set column widths
+        self.table.setColumnWidth(0, 50)
+        self.table.setColumnWidth(1, 220)
+        self.table.setColumnWidth(2, 100)
+        self.table.setColumnWidth(3, 100)
+
         self.setCentralWidget(self.table)
         self.load_data()
 
